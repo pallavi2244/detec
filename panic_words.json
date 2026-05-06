@@ -1,1 +1,16 @@
-["help", "stop", "save me"]
+{
+  "panic_words": [
+    "help",
+    "stop",
+    "save me",
+    "help me",
+    "please help",
+    "don't touch me",
+    "call police",
+    "leave me",
+    "ಬೇಡ",
+    "ಉಳಿಸಿ",
+    "मदद",
+    "बचाओ"
+  ]
+}
