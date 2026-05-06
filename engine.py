@@ -55,9 +55,10 @@ if mode == "demo":
             "distress_detected": False if label == "Safe" else True
         }
 
-        context_data = {
-            "loudness": np.max(fake_audio)
-        }
+      context_data = {
+    "loudness": np.max(fake_audio),
+    "abnormal_audio": False if label == "Safe" else True   # ✅ FIX
+}
 
         decision = make_decision(detection_data, context_data)
 
