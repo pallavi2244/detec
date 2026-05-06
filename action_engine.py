@@ -5,7 +5,9 @@ def trigger_action(audio, decision):
     transcript = decision.get("transcript", "").lower()
     score = decision.get("threat_score", 0)
 
-    # 🔥 Trigger threshold (low for demo reliability)
+    print("DEBUG transcript:", transcript)   # 🔍 helps debugging
+
+    # 🔥 LOWER THRESHOLD FOR DEMO
     if score >= 30:
 
         save_audio(audio)
@@ -14,15 +16,24 @@ def trigger_action(audio, decision):
         services = []
 
         # -------------------------
-        # MULTI EMERGENCY DETECTION
+        # FIRE
         # -------------------------
         if any(word in transcript for word in ["fire", "smoke", "burn"]):
             services.append(("🔥 Fire Department", "101"))
 
+        # -------------------------
+        # MEDICAL
+        # -------------------------
         if any(word in transcript for word in ["breathe", "ambulance", "faint", "pain"]):
             services.append(("🚑 Ambulance", "102"))
 
-        if any(word in transcript for word in ["help", "attack", "danger", "grab", "kidnap"]):
+        # -------------------------
+        # POLICE (FIXED KEYWORDS)
+        # -------------------------
+        if any(word in transcript for word in [
+            "help", "attack", "attacking", "danger",
+            "grab", "kidnap", "kidnapped", "threat", "assault"
+        ]):
             services.append(("👮 Police", "100"))
 
         # fallback
