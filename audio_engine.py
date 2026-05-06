@@ -5,8 +5,8 @@ import librosa
 # -------------------------
 # CONFIG
 # -------------------------
-SAMPLE_RATE = 44100   # ✅ Use supported mic rate
-TARGET_SR = 16000     # ✅ For AI models
+SAMPLE_RATE = 48000   # ✅ Safe default for most microphones
+TARGET_SR = 16000     # ✅ Required for AI models
 DURATION = 3          # seconds
 
 
@@ -17,12 +17,12 @@ def record_audio():
     print("🎤 Recording started... Speak now")
 
     try:
+        # ✅ Let system auto-select mic (NO device index)
         audio = sd.rec(
             int(DURATION * SAMPLE_RATE),
             samplerate=SAMPLE_RATE,
             channels=1,
-            dtype='float32',
-            device=9   # ✅ your working mic device
+            dtype='float32'
         )
 
         sd.wait()
@@ -32,7 +32,7 @@ def record_audio():
         print("✅ Recording finished")
         print("🔊 Max audio value:", np.max(audio))
 
-        # ✅ Convert to 16kHz (required for Whisper/YAMNet)
+        # ✅ Convert to 16kHz for AI models (Whisper/YAMNet)
         audio = librosa.resample(audio, orig_sr=SAMPLE_RATE, target_sr=TARGET_SR)
 
         return audio
