@@ -1,22 +1,35 @@
-import random
+import os
+import scipy.io.wavfile as wav
+import time
 
-def get_location():
-    lat = 12.97 + random.uniform(-0.01, 0.01)
-    lon = 77.59 + random.uniform(-0.01, 0.01)
-    return f"https://maps.google.com/?q={lat},{lon}"
+def trigger_action(
+    audio,
+    decision
+):
 
-def act(level, category, score):
+    if decision["threat_score"] >= 60:
 
-    print("CATEGORY:", category)
+        if not os.path.exists("recording"):
 
-    if level in ["HIGH", "CRITICAL"]:
-        print("📍 Location:", get_location())
+            os.makedirs("recording")
 
-    if level == "CRITICAL":
-        print("🚨 CALL POLICE")
+        filename = f"recording/{time.time()}.wav"
 
-    elif level == "HIGH":
-        print("🚑 SEND ALERT")
+        wav.write(
+            filename,
+            16000,
+            (audio * 32767).astype("int16")
+        )
 
-    elif level == "MEDIUM":
-        print("⚠️ LOG EVENT")
+        print("\nEMERGENCY AUDIO SAVED")
+
+        with open(
+            "incident_log.txt",
+            "a"
+        ) as f:
+
+            f.write(
+                f"{time.ctime()} | "
+                f"{decision['alert_level']} | "
+                f"{decision['threat_score']}\n"
+            )
