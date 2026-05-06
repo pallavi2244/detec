@@ -14,25 +14,24 @@ DURATION = 3   # seconds
 # -------------------------
 
 def record_audio():
-    print("🎤 Recording started... Speak now")
+    print("🎤 Recording started... Speak loudly!")
 
-    try:
-        audio = sd.rec(
-            int(DURATION * SAMPLE_RATE),
-            samplerate=SAMPLE_RATE,
-            channels=1,
-            dtype='float32',
-            device=9   # ✅ IMPORTANT FIX (your real mic)
-        )
+    audio = sd.rec(
+        int(DURATION * SAMPLE_RATE),
+        samplerate=SAMPLE_RATE,
+        channels=1,
+        dtype='float32',
+        device=9   # 👈 KEEP THIS (your correct mic)
+    )
 
-        sd.wait()
+    sd.wait()
 
-        audio = np.squeeze(audio)
+    audio = np.squeeze(audio)
 
-        print("✅ Recording finished")
-        print("🔊 Max audio value:", np.max(audio))
+    print("✅ Recording finished")
+    print("🔊 Max audio value:", np.max(audio))
 
-        return audio
+    return audio
 
     except Exception as e:
         print("❌ Error:", e)
