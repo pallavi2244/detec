@@ -1,6 +1,6 @@
-import scipy.io.wavfile as wav
-import time
+def print_banner():
 
-def save_audio(audio):
-    filename = f"recording/{time.time()}.wav"
-    wav.write(filename, 16000, (audio * 32767).astype("int16"))
+    print("=" * 60)
+    print(" AI DISTRESS DETECTION SYSTEM ")
+    print("=" * 60)
+    
