@@ -1,3 +1,5 @@
+from utils import save_audio
+
 def trigger_action(audio, decision):
 
     if decision["threat_score"] >= 60:
