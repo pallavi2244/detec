@@ -15,10 +15,7 @@ yamnet_model = hub.load(
 )
 
 class_names = []
-class_map_path = tf.keras.utils.get_file(
-    'yamnet_class_map.csv',
-    'https://storage.googleapis.com/tfhub-assets/google/yamnet/yamnet_class_map.csv'
-)
+class_map_path = "yamnet_class_map.csv"
 with open(class_map_path) as csv_file:
 
     reader = csv.DictReader(csv_file)
