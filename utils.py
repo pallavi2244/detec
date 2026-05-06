@@ -1,22 +1,47 @@
 import os
-import scipy.io.wavfile as wav
-import time
+import numpy as np
+import soundfile as sf
+import datetime
+import requests
 
+
+# -------------------------
+# PRINT BANNER
+# -------------------------
+def print_banner():
+    print("\n==============================")
+    print("🚀 AI DISTRESS DETECTION SYSTEM")
+    print("==============================\n")
+
+
+# -------------------------
+# SAVE AUDIO
+# -------------------------
 def save_audio(audio):
 
-    # ✅ AUTO-CREATE FOLDER
-    if not os.path.exists("recording"):
-        os.makedirs("recording")
+    if not os.path.exists("recordings"):
+        os.makedirs("recordings")
 
-    filename = f"recording/{time.time()}.wav"
+    filename = f"recordings/alert_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.wav"
 
-    wav.write(
-        filename,
-        16000,
-        (audio * 32767).astype("int16")
-    )
+    sf.write(filename, audio, 16000)
 
-def print_banner():
-    print("=" * 60)
-    print(" AI DISTRESS DETECTION SYSTEM ")
-    print("=" * 60)
+    print(f"💾 Audio saved: {filename}")
+
+
+# -------------------------
+# GET LOCATION (IP BASED)
+# -------------------------
+def get_location():
+    try:
+        res = requests.get("https://ipinfo.io/json")
+        data = res.json()
+
+        city = data.get("city", "")
+        region = data.get("region", "")
+        country = data.get("country", "")
+
+        return f"{city}, {region}, {country}"
+
+    except:
+        return "Location not available"
