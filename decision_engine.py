@@ -1,68 +1,43 @@
-def calculate_score(text, scream, loud, instability, stutter, panic_words):
+def make_decision(
+    detection_data,
+    context_data
+):
 
-    score = 0
-    text = text.lower()
+    threat_score = 0
 
-    for w in panic_words:
-        if w in text:
-            score += 40
+    if detection_data["distress_detected"]:
 
-    score += scream * 50
+        threat_score += 50
 
-    if loud > 0.3:
-        score += 20
+    threat_score += (
+        len(
+            detection_data["panic_words"]
+        ) * 25
+    )
 
-    if instability > 0.2:
-        score += 15
+    if context_data["abnormal_audio"]:
 
-    if stutter > 1:
-        score += 20
+        threat_score += 30
 
-    return min(score, 100)
+    if threat_score >= 90:
 
+        level = "CRITICAL ALERT 🔴"
 
-def decide(score, context_score):
+    elif threat_score >= 60:
 
-    if context_score > 200:
-        return "CRITICAL"
+        level = "HIGH ALERT 🟠"
 
-    if score > 80:
-        return "HIGH"
+    elif threat_score >= 30:
 
-    if score > 40:
-        return "MEDIUM"
+        level = "MEDIUM ALERT 🟡"
 
-    return "SAFE"
+    else:
 
-
-def classify(text):
-
-    t = text.lower()
-
-    if "fire" in t or "smoke" in t:
-        return "FIRE"
-
-    if "breathe" in t or "ambulance" in t:
-        return "MEDICAL"
-
-    if "help" in t or "grab" in t:
-        return "VIOLENCE"
-
-    if "crash" in t:
-        return "ACCIDENT"
-
-    if "don't want" in t:
-        return "MENTAL"
-
-    return "SAFE"
-
-
-def route(category):
+        level = "SAFE 🟢"
 
     return {
-        "FIRE": "🔥 FIRE",
-        "MEDICAL": "🚑 AMBULANCE",
-        "VIOLENCE": "🚓 POLICE",
-        "ACCIDENT": "🚨 TRAFFIC",
-        "MENTAL": "💬 HELPLINE"
-    }.get(category, "LOG")
+
+        "threat_score": threat_score,
+
+        "alert_level": level
+    }
