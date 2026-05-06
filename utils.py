@@ -6,7 +6,7 @@ import requests
 
 
 # -------------------------
-# PRINT BANNER
+# BANNER
 # -------------------------
 def print_banner():
     print("\n==============================")
@@ -30,7 +30,7 @@ def save_audio(audio):
 
 
 # -------------------------
-# GET LOCATION (IP BASED)
+# GET LOCATION
 # -------------------------
 def get_location():
     try:
