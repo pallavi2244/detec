@@ -78,7 +78,7 @@ if mode == "demo":
 # -------------------------
 else:
     print("\n🎤 LIVE MODE STARTED")
-    print("👉 Say 'end call' to stop\n")
+    print("👉 Say 'exit' to stop\n")
 
     while True:
         print("\n🎧 Listening...")
@@ -100,6 +100,6 @@ else:
         print("THREAT SCORE:", decision["threat_score"])
         print("ALERT LEVEL:", decision["alert_level"])
 
-        if "end call" in transcript:
+        if "exit" in transcript:
             print("\n👋 Ending live demo...")
             break
