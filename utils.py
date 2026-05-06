@@ -1,22 +1,15 @@
 import os
-import numpy as np
 import soundfile as sf
 import datetime
 import requests
 
 
-# -------------------------
-# BANNER
-# -------------------------
 def print_banner():
     print("\n==============================")
     print("🚀 AI DISTRESS DETECTION SYSTEM")
     print("==============================\n")
 
 
-# -------------------------
-# SAVE AUDIO
-# -------------------------
 def save_audio(audio):
 
     if not os.path.exists("recordings"):
@@ -29,19 +22,12 @@ def save_audio(audio):
     print(f"💾 Audio saved: {filename}")
 
 
-# -------------------------
-# GET LOCATION
-# -------------------------
 def get_location():
     try:
         res = requests.get("https://ipinfo.io/json")
         data = res.json()
 
-        city = data.get("city", "")
-        region = data.get("region", "")
-        country = data.get("country", "")
-
-        return f"{city}, {region}, {country}"
+        return f"{data.get('city')}, {data.get('region')}, {data.get('country')}"
 
     except:
         return "Location not available"
