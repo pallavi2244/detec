@@ -9,8 +9,8 @@ from utils import print_banner
 print_banner()
 
 # ✅ ADD MODE SELECTION
-mode = input("Choose mode (live/demo): ").strip().lower()
-
+print("Choose mode (live/demo): ", end="")
+mode = input().strip().lower()
 while True:
 
     print("\nListening...")
