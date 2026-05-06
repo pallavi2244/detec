@@ -38,7 +38,7 @@ if mode not in ["demo", "live"]:
 # DEMO MODE
 # -------------------------
 if mode == "demo":
-    print("\n🧠 Running DEMO (text scenarios)...")
+    print("\n🧠 Running DEMO...")
 
     for label, text in DEMO_SCENARIOS:
         print(f"\n--- {label} ---")
@@ -60,25 +60,25 @@ if mode == "demo":
 
         decision = make_decision(detection_data, context_data)
 
-        # 🔥 Needed for emergency logic
+        # 🔥 IMPORTANT
         decision["transcript"] = text
 
         trigger_action(fake_audio, decision)
         learn_from_event(decision)
 
-        print("\n📜 TEXT:", text)
-        print("⚠️ THREAT SCORE:", decision["threat_score"])
-        print("🚨 ALERT LEVEL:", decision["alert_level"])
+        print("\nTEXT:", text)
+        print("THREAT SCORE:", decision["threat_score"])
+        print("ALERT LEVEL:", decision["alert_level"])
 
         time.sleep(2)
 
 
 # -------------------------
-# LIVE MODE (VOICE EXIT + AUTO CALL)
+# LIVE MODE
 # -------------------------
 else:
-    print("\n🎤 Running LIVE microphone mode...")
-    print("👉 Say 'exit' to stop\n")
+    print("\n🎤 LIVE MODE STARTED")
+    print("👉 Say 'end call' to stop\n")
 
     while True:
         print("\n🎧 Listening...")
@@ -89,7 +89,7 @@ else:
         context_data = analyze_context(audio)
         decision = make_decision(detection_data, context_data)
 
-        # 🔥 Needed for emergency logic
+        # 🔥 IMPORTANT FIX
         decision["transcript"] = detection_data["transcript"]
 
         trigger_action(audio, decision)
@@ -97,11 +97,11 @@ else:
 
         transcript = detection_data["transcript"].lower()
 
-        print("\n📜 TRANSCRIPT:", transcript)
-        print("⚠️ THREAT SCORE:", decision["threat_score"])
-        print("🚨 ALERT LEVEL:", decision["alert_level"])
+        print("\nTRANSCRIPT:", transcript)
+        print("THREAT SCORE:", decision["threat_score"])
+        print("ALERT LEVEL:", decision["alert_level"])
 
         # 🔥 VOICE EXIT
-        if "exit" in transcript:
+        if "end call" in transcript:
             print("\n👋 Ending live demo...")
             break
