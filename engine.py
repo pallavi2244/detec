@@ -13,7 +13,7 @@ import time
 print_banner()
 
 # -------------------------
-# DEMO SCENARIOS (TEXT MODE)
+# DEMO SCENARIOS
 # -------------------------
 DEMO_SCENARIOS = [
     ("Safe", "Hey how are you"),
@@ -35,7 +35,7 @@ if mode not in ["demo", "live"]:
 
 
 # -------------------------
-# DEMO MODE (TEXT BASED)
+# DEMO MODE
 # -------------------------
 if mode == "demo":
     print("\n🧠 Running DEMO (text scenarios)...")
@@ -43,10 +43,8 @@ if mode == "demo":
     for label, text in DEMO_SCENARIOS:
         print(f"\n--- {label} ---")
 
-        # fake audio
         fake_audio = np.ones(16000 * 3) * (0.5 if label != "Safe" else 0.1)
 
-        # ✅ FIXED detection_data
         detection_data = {
             "transcript": text,
             "panic_words": [],
@@ -55,10 +53,10 @@ if mode == "demo":
             "distress_detected": False if label == "Safe" else True
         }
 
-      context_data = {
-    "loudness": np.max(fake_audio),
-    "abnormal_audio": False if label == "Safe" else True   # ✅ FIX
-}
+        context_data = {
+            "loudness": np.max(fake_audio),
+            "abnormal_audio": False if label == "Safe" else True
+        }
 
         decision = make_decision(detection_data, context_data)
 
@@ -73,13 +71,19 @@ if mode == "demo":
 
 
 # -------------------------
-# LIVE MODE (MIC)
+# LIVE MODE (WITH EXIT)
 # -------------------------
 else:
     print("\n🎤 Running LIVE microphone mode...")
 
     while True:
         print("\n🎧 Listening...")
+
+        user_input = input("👉 Press Enter to record OR type 'exit' to stop: ")
+
+        if user_input.lower() == "exit":
+            print("👋 Exiting live demo...")
+            break
 
         audio = record_audio()
 
