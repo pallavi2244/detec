@@ -1,5 +1,3 @@
-from utils import save_audio
-
 def trigger_action(audio, decision):
 
     if decision["threat_score"] >= 60:
@@ -8,7 +6,7 @@ def trigger_action(audio, decision):
 
         print("\nEMERGENCY AUDIO SAVED")
 
-        with open("incident_log.txt", "a") as f:
+        with open("incident_log.txt", "a", encoding="utf-8") as f:
             f.write(
                 f"{decision['alert_level']} | {decision['threat_score']}\n"
             )
