@@ -1,34 +1,102 @@
+import whisper
+import scipy.io.wavfile as wav
+import tensorflow_hub as hub
+import tensorflow as tf
 import numpy as np
+import json
+import csv
 
-def analyze_context(audio):
+print("Loading Whisper...")
+whisper_model = whisper.load_model("base")
 
-    loudness = np.mean(np.abs(audio))
+print("Loading YAMNet...")
+yamnet_model = hub.load(
+    'https://tfhub.dev/google/yamnet/1'
+)
 
-    peak = np.max(np.abs(audio))
+class_names = []
 
-    anomaly_score = 0
+class_map_path = tf.keras.utils.get_file(
+    'yamnet_class_map.csv',
+    'https://storage.googleapis.com/audioset/yamnet/yamnet_class_map.csv'
+)
 
-    abnormal_audio = False
+with open(class_map_path) as csv_file:
 
-    if loudness > 0.10:
+    reader = csv.DictReader(csv_file)
 
-        anomaly_score += 30
+    for row in reader:
+        class_names.append(row['display_name'])
 
-    if peak > 0.60:
+with open("panic_words.json", "r") as f:
 
-        anomaly_score += 50
+    panic_words = json.load(f)["panic_words"]
 
-    if anomaly_score >= 50:
+def detect_distress(audio):
 
-        abnormal_audio = True
+    wav.write(
+        "temp.wav",
+        16000,
+        (audio * 32767).astype("int16")
+    )
+
+    result = whisper_model.transcribe(
+        "temp.wav"
+    )
+
+    transcript = result["text"].lower()
+
+    detected_words = []
+
+    for word in panic_words:
+
+        if word.lower() in transcript:
+
+            detected_words.append(word)
+
+    waveform = tf.convert_to_tensor(
+        audio,
+        dtype=tf.float32
+    )
+
+    scores, embeddings, spectrogram = yamnet_model(
+        waveform
+    )
+
+    scores_np = scores.numpy()
+
+    mean_scores = np.mean(scores_np, axis=0)
+
+    top_class = class_names[np.argmax(mean_scores)]
+
+    top_score = np.max(mean_scores)
+
+    distress_sounds = [
+        "Scream",
+        "Shout",
+        "Crying",
+        "Yell",
+        "Explosion",
+        "Gunshot"
+    ]
+
+    distress_detected = False
+
+    if any(
+        sound.lower() in top_class.lower()
+        for sound in distress_sounds
+    ):
+        distress_detected = True
 
     return {
 
-        "loudness": float(loudness),
+        "transcript": transcript,
 
-        "peak": float(peak),
+        "panic_words": detected_words,
 
-        "anomaly_score": anomaly_score,
+        "distress_detected": distress_detected,
 
-        "abnormal_audio": abnormal_audio
+        "detected_sound": top_class,
+
+        "sound_confidence": float(top_score)
     }
