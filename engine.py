@@ -1,10 +1,11 @@
-from audio_engine import record_audio, load_demo_audio
+from audio_engine import record_audio
 from detection_engine import detect_distress
 from context_engine import analyze_context
 from decision_engine import make_decision
 from action_engine import trigger_action
 from learning_engine import learn_from_event
 from utils import print_banner
+
 import numpy as np
 import time
 
@@ -34,7 +35,7 @@ if mode not in ["demo", "live"]:
 
 
 # -------------------------
-# DEMO MODE (TEXT-BASED)
+# DEMO MODE (TEXT BASED)
 # -------------------------
 if mode == "demo":
     print("\n🧠 Running DEMO (text scenarios)...")
@@ -42,15 +43,16 @@ if mode == "demo":
     for label, text in DEMO_SCENARIOS:
         print(f"\n--- {label} ---")
 
-        # fake audio (just for pipeline)
+        # fake audio
         fake_audio = np.ones(16000 * 3) * (0.5 if label != "Safe" else 0.1)
 
-        # simulate detection output
+        # ✅ FIXED detection_data
         detection_data = {
             "transcript": text,
             "panic_words": [],
             "detected_sound": "simulated",
-            "sound_confidence": 0.8
+            "sound_confidence": 0.8,
+            "distress_detected": False if label == "Safe" else True
         }
 
         context_data = {
