@@ -78,7 +78,7 @@ if mode == "demo":
 # -------------------------
 else:
     print("\n🎤 Running LIVE microphone mode...")
-    print("👉 Say 'end call' to stop\n")
+    print("👉 Say 'exit' to stop\n")
 
     while True:
         print("\n🎧 Listening...")
