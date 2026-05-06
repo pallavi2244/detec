@@ -2,63 +2,52 @@ from utils import save_audio, get_location
 
 def trigger_action(audio, decision):
 
-    # Only trigger for high threat
     if decision["threat_score"] >= 60:
 
         save_audio(audio)
 
-        # -------------------------
-        # GET DATA
-        # -------------------------
         location = get_location()
         transcript = decision.get("transcript", "").lower()
 
         # -------------------------
-        # CHOOSE EMERGENCY SERVICE
+        # SELECT SERVICE
         # -------------------------
-        if any(word in transcript for word in ["fire", "burn", "smoke"]):
-            service = "Fire Department"
+        if any(word in transcript for word in ["fire", "smoke"]):
+            service = "🔥 Fire Department"
             number = "101"
 
-        elif any(word in transcript for word in ["breathe", "ambulance", "faint", "pain"]):
-            service = "Ambulance"
+        elif any(word in transcript for word in ["breathe", "ambulance", "pain"]):
+            service = "🚑 Ambulance"
             number = "102"
 
-        elif any(word in transcript for word in ["help", "attack", "grab", "danger", "kidnap"]):
-            service = "Police"
+        elif any(word in transcript for word in ["help", "attack", "danger", "grab"]):
+            service = "👮 Police"
             number = "100"
 
         else:
-            service = "Emergency Helpline"
+            service = "🚨 Emergency"
             number = "112"
 
         # -------------------------
-        # CREATE ALERT MESSAGE
+        # ALERT OUTPUT
         # -------------------------
-        alert_message = f"""
-🚨 EMERGENCY ALERT 🚨
-Service: {service} ({number})
-Threat Level: {decision['alert_level']}
-Score: {decision['threat_score']}
-Location: {location}
-"""
-
-        # -------------------------
-        # DISPLAY ALERT
-        # -------------------------
-        print(alert_message)
+        print("\n🚨 EMERGENCY DETECTED!")
+        print(f"📞 Calling {service} ({number})")
+        print(f"📍 Location sent: {location}")
 
         # -------------------------
         # SAVE LOG
         # -------------------------
         with open("incident_log.txt", "a", encoding="utf-8") as f:
-            f.write(alert_message + "\n")
+            f.write(
+                f"{decision['alert_level']} | {decision['threat_score']} | {service} | {location}\n"
+            )
 
         # -------------------------
-        # OPTIONAL: OPEN CALL (SIMULATION)
+        # SIMULATE CALL
         # -------------------------
         try:
             import os
-            os.system(f"start tel:{number}")   # works on Windows
+            os.system(f"start tel:{number}")
         except:
             pass
