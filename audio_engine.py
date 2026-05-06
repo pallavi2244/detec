@@ -5,8 +5,9 @@ import librosa
 SAMPLE_RATE = 16000
 DURATION = 3
 
+
 def record_audio():
-    print("🎤 Recording started...")
+    print("🎤 Recording started... Speak now")
 
     try:
         audio = sd.rec(
@@ -32,36 +33,9 @@ def record_audio():
 
 
 def load_demo_audio(path):
-    audio, sr = librosa.load(path, sr=SAMPLE_RATE)
-    return audio
-    except Exception as e:
-        print("❌ Error:", e)
-        return np.zeros(int(DURATION * SAMPLE_RATE))
-
-
-# -------------------------
-# DEMO AUDIO LOADER
-# -------------------------
-
-def load_demo_audio(path):
-    print(f"📂 Loading demo audio: {path}")
-
     try:
         audio, sr = librosa.load(path, sr=SAMPLE_RATE)
-
-        print("✅ Demo audio loaded")
-
         return audio
-
     except Exception as e:
-        print("❌ Error loading demo audio:", e)
+        print("❌ Demo load error:", e)
         return np.zeros(int(DURATION * SAMPLE_RATE))
-
-
-# -------------------------
-# OPTIONAL: LIST DEVICES
-# -------------------------
-
-def list_devices():
-    print("\n🎧 Available Audio Devices:\n")
-    print(sd.query_devices())
