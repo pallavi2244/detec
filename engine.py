@@ -21,7 +21,8 @@ DEMO_SCENARIOS = [
     ("Fire", "Fire and smoke everywhere"),
     ("Violence", "Help someone grabbing me"),
     ("Mentally Disturbed", "I feel unsafe and scared"),
-    ("Accident", "Huge crash help needed")
+    ("Accident", "Huge crash help needed"),
+    ("Multi Emergency", "Fire and someone kidnapped me")
 ]
 
 # -------------------------
@@ -78,7 +79,7 @@ if mode == "demo":
 # -------------------------
 else:
     print("\n🎤 LIVE MODE STARTED")
-    print("👉 Say 'exit' to stop\n")
+    print("👉 Say 'end call' to stop\n")
 
     while True:
         print("\n🎧 Listening...")
@@ -102,6 +103,6 @@ else:
         print("ALERT LEVEL:", decision["alert_level"])
 
         # 🔥 VOICE EXIT
-        if "exit" in transcript:
+        if "end call" in transcript:
             print("\n👋 Ending live demo...")
             break
