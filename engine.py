@@ -60,7 +60,7 @@ if mode == "demo":
 
         decision = make_decision(detection_data, context_data)
 
-        # 🔥 important for emergency logic
+        # 🔥 Needed for emergency logic
         decision["transcript"] = text
 
         trigger_action(fake_audio, decision)
@@ -74,7 +74,7 @@ if mode == "demo":
 
 
 # -------------------------
-# LIVE MODE (VOICE EXIT)
+# LIVE MODE (VOICE EXIT + AUTO CALL)
 # -------------------------
 else:
     print("\n🎤 Running LIVE microphone mode...")
@@ -89,7 +89,7 @@ else:
         context_data = analyze_context(audio)
         decision = make_decision(detection_data, context_data)
 
-        # 🔥 important for emergency logic
+        # 🔥 Needed for emergency logic
         decision["transcript"] = detection_data["transcript"]
 
         trigger_action(audio, decision)
@@ -97,28 +97,11 @@ else:
 
         transcript = detection_data["transcript"].lower()
 
-        print("\n📜 TRANSCRIPT:")
-        print(transcript)
-
-        print("\n🚨 PANIC WORDS:")
-        print(detection_data["panic_words"])
-
-        print("\n🔊 DETECTED SOUND:")
-        print(detection_data["detected_sound"])
-
-        print("\n📊 CONFIDENCE:")
-        print(round(detection_data["sound_confidence"], 2))
-
-        print("\n📈 LOUDNESS:")
-        print(round(context_data["loudness"], 2))
-
-        print("\n⚠️ THREAT SCORE:")
-        print(decision["threat_score"])
-
-        print("\n🚨 ALERT LEVEL:")
-        print(decision["alert_level"])
+        print("\n📜 TRANSCRIPT:", transcript)
+        print("⚠️ THREAT SCORE:", decision["threat_score"])
+        print("🚨 ALERT LEVEL:", decision["alert_level"])
 
         # 🔥 VOICE EXIT
-        if "end call" in transcript:
+        if "exit" in transcript:
             print("\n👋 Ending live demo...")
             break
