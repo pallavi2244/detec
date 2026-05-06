@@ -1,30 +1,102 @@
+import whisper
+import scipy.io.wavfile as wav
+import tensorflow_hub as hub
+import tensorflow as tf
 import numpy as np
-import librosa
+import json
+import csv
 
-def detect_scream(audio):
-    return min(np.abs(audio).mean() * 3, 1.0)
+print("Loading Whisper...")
+whisper_model = whisper.load_model("base")
 
-def get_loudness(audio):
-    return np.abs(audio).mean()
+print("Loading YAMNet...")
+yamnet_model = hub.load(
+    'https://tfhub.dev/google/yamnet/1'
+)
 
-def detect_pitch(audio):
-    pitches, mags = librosa.piptrack(y=audio, sr=16000)
-    vals = pitches[mags > 0]
-    return vals.mean() if len(vals) > 0 else 0
+class_names = []
 
-def pitch_stress(p):
-    if p > 300:
-        return 1
-    elif p > 200:
-        return 0.5
-    return 0
+class_map_path = tf.keras.utils.get_file(
+    'yamnet_class_map.csv',
+    'https://storage.googleapis.com/audioset/yamnet/yamnet_class_map.csv'
+)
 
-def detect_stutter(text):
-    words = text.split()
-    return sum(1 for i in range(1, len(words)) if words[i] == words[i-1])
+with open(class_map_path) as csv_file:
 
-def voice_instability(audio):
-    return np.abs(audio[1:] - audio[:-1]).mean()
+    reader = csv.DictReader(csv_file)
 
-def ai_risk(scream, loud, stress, stutter):
-    return min((scream*0.4 + loud*0.2 + stress*0.3 + min(stutter,2)*0.1)*100, 100)
+    for row in reader:
+        class_names.append(row['display_name'])
+
+with open("panic_words.json", "r") as f:
+
+    panic_words = json.load(f)["panic_words"]
+
+def detect_distress(audio):
+
+    wav.write(
+        "temp.wav",
+        16000,
+        (audio * 32767).astype("int16")
+    )
+
+    result = whisper_model.transcribe(
+        "temp.wav"
+    )
+
+    transcript = result["text"].lower()
+
+    detected_words = []
+
+    for word in panic_words:
+
+        if word.lower() in transcript:
+
+            detected_words.append(word)
+
+    waveform = tf.convert_to_tensor(
+        audio,
+        dtype=tf.float32
+    )
+
+    scores, embeddings, spectrogram = yamnet_model(
+        waveform
+    )
+
+    scores_np = scores.numpy()
+
+    mean_scores = np.mean(scores_np, axis=0)
+
+    top_class = class_names[np.argmax(mean_scores)]
+
+    top_score = np.max(mean_scores)
+
+    distress_sounds = [
+        "Scream",
+        "Shout",
+        "Crying",
+        "Yell",
+        "Explosion",
+        "Gunshot"
+    ]
+
+    distress_detected = False
+
+    if any(
+        sound.lower() in top_class.lower()
+        for sound in distress_sounds
+    ):
+        distress_detected = True
+
+    return {
+
+        "transcript": transcript,
+
+        "panic_words": detected_words,
+
+        "distress_detected": distress_detected,
+
+        "detected_sound": top_class,
+
+        "sound_confidence": float(top_score)
+    }
