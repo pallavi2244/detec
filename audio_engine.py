@@ -22,22 +22,20 @@ def record_audio():
             samplerate=SAMPLE_RATE,
             channels=1,
             dtype='float32',
-            device=None   # ✅ uses default microphone
+            device=9   # ✅ IMPORTANT FIX (your real mic)
         )
 
         sd.wait()
 
-        print("✅ Recording finished")
-
         audio = np.squeeze(audio)
 
-        # 🔍 Debug info (helps verify mic works)
+        print("✅ Recording finished")
         print("🔊 Max audio value:", np.max(audio))
 
         return audio
 
     except Exception as e:
-        print("❌ Microphone error:", e)
+        print("❌ Error:", e)
         return np.zeros(int(DURATION * SAMPLE_RATE))
 
 
