@@ -28,6 +28,5 @@ def get_location():
         data = res.json()
 
         return f"{data.get('city')}, {data.get('region')}, {data.get('country')}"
-
     except:
         return "Location not available"
