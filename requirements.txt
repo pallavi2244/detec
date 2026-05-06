@@ -1,1 +1,11 @@
-
+sounddevice
+numpy
+scipy
+torch
+torchaudio
+openai-whisper
+tensorflow
+tensorflow-hub
+librosa
+matplotlib
+pandas
