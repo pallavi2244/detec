@@ -17,12 +17,12 @@ print_banner()
 # -------------------------
 DEMO_SCENARIOS = [
     ("Safe", "Hey how are you"),
-    ("Medical", "I can't breathe call ambulance"),
-    ("Fire", "Fire and smoke everywhere"),
-    ("Violence", "Help someone grabbing me"),
-    ("Mentally Disturbed", "I feel unsafe and scared"),
-    ("Accident", "Huge crash help needed"),
-    ("Multi Emergency", "Fire and I am being kidnapped")
+    ("Medical", "I can't breathe"),
+    ("Fire", "Fire in building"),
+    ("Violence", "Help someone attacking me"),
+    ("Hindi", "bachao koi mujhe pakad raha hai"),
+    ("Kannada", "sahay madi yaro nanna hidididdare"),
+    ("Multi Emergency", "fire and i am kidnapped")
 ]
 
 # -------------------------
@@ -31,7 +31,6 @@ DEMO_SCENARIOS = [
 mode = input("Choose mode (demo/live): ").strip().lower()
 
 if mode not in ["demo", "live"]:
-    print("Invalid input, defaulting to DEMO mode")
     mode = "demo"
 
 
@@ -44,31 +43,29 @@ if mode == "demo":
     for label, text in DEMO_SCENARIOS:
         print(f"\n--- {label} ---")
 
-        fake_audio = np.ones(16000 * 3) * (0.5 if label != "Safe" else 0.1)
+        fake_audio = np.ones(16000 * 3) * 0.5
 
         detection_data = {
             "transcript": text,
             "panic_words": [],
             "detected_sound": "simulated",
             "sound_confidence": 0.8,
-            "distress_detected": False if label == "Safe" else True
+            "distress_detected": True
         }
 
         context_data = {
-            "loudness": np.max(fake_audio),
-            "abnormal_audio": False if label == "Safe" else True
+            "loudness": 0.5,
+            "abnormal_audio": True
         }
 
         decision = make_decision(detection_data, context_data)
 
-        decision["transcript"] = text  # 🔥 IMPORTANT
+        decision["transcript"] = text
 
         trigger_action(fake_audio, decision)
-        learn_from_event(decision)
 
-        print("\nTEXT:", text)
-        print("THREAT SCORE:", decision["threat_score"])
-        print("ALERT LEVEL:", decision["alert_level"])
+        print("TEXT:", text)
+        print("ALERT:", decision["alert_level"])
 
         time.sleep(2)
 
@@ -78,7 +75,7 @@ if mode == "demo":
 # -------------------------
 else:
     print("\n🎤 LIVE MODE STARTED")
-    print("👉 Say 'exit' to stop\n")
+    print("👉 Say 'end call' to stop\n")
 
     while True:
         print("\n🎧 Listening...")
@@ -89,17 +86,15 @@ else:
         context_data = analyze_context(audio)
         decision = make_decision(detection_data, context_data)
 
-        decision["transcript"] = detection_data["transcript"]  # 🔥 IMPORTANT
+        decision["transcript"] = detection_data["transcript"]
 
         trigger_action(audio, decision)
-        learn_from_event(decision)
 
         transcript = detection_data["transcript"].lower()
 
         print("\nTRANSCRIPT:", transcript)
-        print("THREAT SCORE:", decision["threat_score"])
-        print("ALERT LEVEL:", decision["alert_level"])
+        print("ALERT:", decision["alert_level"])
 
-        if "exit" in transcript:
-            print("\n👋 Ending live demo...")
+        if "end call" in transcript:
+            print("👋 Ending demo...")
             break
