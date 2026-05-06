@@ -6,54 +6,78 @@ from action_engine import trigger_action
 from learning_engine import learn_from_event
 from utils import print_banner
 
+
 print_banner()
 
-# ✅ ADD MODE SELECTION
-print("Choose mode (live/demo): ", end="")
-mode = "live" 
+# -------------------------
+# MODE SELECTION
+# -------------------------
+mode = input("Choose mode (live/demo): ").strip().lower()
+
+if mode not in ["live", "demo"]:
+    print("Invalid input, defaulting to LIVE mode")
+    mode = "live"
+
+# -------------------------
+# MAIN LOOP
+# -------------------------
 while True:
 
-    print("\nListening...")
+    print("\n🎧 Listening...")
 
-    # ✅ FIXED INPUT HANDLING
+    # -------------------------
+    # INPUT SOURCE
+    # -------------------------
     if mode == "demo":
         audio = load_demo_audio("demo_audio/help.wav")
     else:
         audio = record_audio()
 
-    # Detection
+    # -------------------------
+    # DETECTION
+    # -------------------------
     detection_data = detect_distress(audio)
 
-    # Context
+    # -------------------------
+    # CONTEXT ANALYSIS
+    # -------------------------
     context_data = analyze_context(audio)
 
-    # Decision
+    # -------------------------
+    # DECISION MAKING
+    # -------------------------
     decision = make_decision(detection_data, context_data)
 
-    # Action
+    # -------------------------
+    # ACTION
+    # -------------------------
     trigger_action(audio, decision)
 
-    # Learning
+    # -------------------------
+    # LEARNING
+    # -------------------------
     learn_from_event(decision)
 
-    # Output
-    print("\nTRANSCRIPT:")
+    # -------------------------
+    # OUTPUT
+    # -------------------------
+    print("\n📜 TRANSCRIPT:")
     print(detection_data["transcript"])
 
-    print("\nPANIC WORDS:")
+    print("\n🚨 PANIC WORDS:")
     print(detection_data["panic_words"])
 
-    print("\nDETECTED SOUND:")
+    print("\n🔊 DETECTED SOUND:")
     print(detection_data["detected_sound"])
 
-    print("\nCONFIDENCE:")
+    print("\n📊 CONFIDENCE:")
     print(round(detection_data["sound_confidence"], 2))
 
-    print("\nLOUDNESS:")
+    print("\n📈 LOUDNESS:")
     print(round(context_data["loudness"], 2))
 
-    print("\nTHREAT SCORE:")
+    print("\n⚠️ THREAT SCORE:")
     print(decision["threat_score"])
 
-    print("\nALERT LEVEL:")
+    print("\n🚦 ALERT LEVEL:")
     print(decision["alert_level"])
