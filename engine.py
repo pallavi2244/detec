@@ -1,4 +1,4 @@
-from audio_engine import record_audio
+\from audio_engine import record_audio
 from detection_engine import detect_distress
 from context_engine import analyze_context
 from decision_engine import make_decision
@@ -20,7 +20,7 @@ DEMO_SCENARIOS = [
     ("Medical", "I can't breathe call ambulance"),
     ("Fire", "Fire and smoke everywhere"),
     ("Violence", "Help someone grabbing me"),
-    ("Mentally Disturbed", "I don't want to live"),
+    ("Mentally Disturbed", "I feel unsafe and scared"),
     ("Accident", "Huge crash help needed")
 ]
 
@@ -60,6 +60,9 @@ if mode == "demo":
 
         decision = make_decision(detection_data, context_data)
 
+        # 🔥 important for emergency logic
+        decision["transcript"] = text
+
         trigger_action(fake_audio, decision)
         learn_from_event(decision)
 
@@ -71,19 +74,14 @@ if mode == "demo":
 
 
 # -------------------------
-# LIVE MODE (WITH EXIT)
+# LIVE MODE (VOICE EXIT)
 # -------------------------
 else:
     print("\n🎤 Running LIVE microphone mode...")
+    print("👉 Say 'end call' to stop\n")
 
     while True:
         print("\n🎧 Listening...")
-
-        user_input = input("👉 Press Enter to record OR type 'exit' to stop: ")
-
-        if user_input.lower() == "exit":
-            print("👋 Exiting live demo...")
-            break
 
         audio = record_audio()
 
@@ -91,11 +89,16 @@ else:
         context_data = analyze_context(audio)
         decision = make_decision(detection_data, context_data)
 
+        # 🔥 important for emergency logic
+        decision["transcript"] = detection_data["transcript"]
+
         trigger_action(audio, decision)
         learn_from_event(decision)
 
+        transcript = detection_data["transcript"].lower()
+
         print("\n📜 TRANSCRIPT:")
-        print(detection_data["transcript"])
+        print(transcript)
 
         print("\n🚨 PANIC WORDS:")
         print(detection_data["panic_words"])
@@ -114,3 +117,8 @@ else:
 
         print("\n🚨 ALERT LEVEL:")
         print(decision["alert_level"])
+
+        # 🔥 VOICE EXIT
+        if "end call" in transcript:
+            print("\n👋 Ending live demo...")
+            break
