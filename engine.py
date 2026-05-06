@@ -10,7 +10,7 @@ print_banner()
 
 # ✅ ADD MODE SELECTION
 print("Choose mode (live/demo): ", end="")
-mode = input().strip().lower()
+mode = "live" 
 while True:
 
     print("\nListening...")
