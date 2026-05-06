@@ -1,17 +1,41 @@
 import json
+import os
 
-try:
-    with open("panic_words.json") as f:
-        PANIC_WORDS = set(json.load(f))
-except:
-    PANIC_WORDS = set(["help", "stop", "save me"])
+MEMORY_FILE = "memory.json"
 
-def learn(text, score):
-    if score > 70:
-        for w in text.split():
-            if len(w) > 3:
-                PANIC_WORDS.add(w.lower())
+if not os.path.exists(MEMORY_FILE):
 
-def save_words():
-    with open("panic_words.json", "w") as f:
-        json.dump(list(PANIC_WORDS), f)
+    with open(MEMORY_FILE, "w") as f:
+
+        json.dump({
+            "events": [],
+            "average_threat": 0
+        }, f)
+
+def learn_from_event(event):
+
+    with open(MEMORY_FILE, "r") as f:
+
+        memory = json.load(f)
+
+    memory["events"].append(event)
+
+    total = 0
+
+    for e in memory["events"]:
+
+        total += e["threat_score"]
+
+    memory["average_threat"] = (
+        total / len(memory["events"])
+    )
+
+    with open(MEMORY_FILE, "w") as f:
+
+        json.dump(
+            memory,
+            f,
+            indent=4
+        )
+
+    print("\nSELF-LEARNING UPDATED")
