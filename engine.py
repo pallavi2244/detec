@@ -1,75 +1,115 @@
-from audio_engine import get_audio
-from detection_engine import *
-from context_engine import *
-from learning_engine import *
-from decision_engine import *
-from action_engine import act
-from utils import save_audio
+from audio_engine import (
+    record_audio,
+    load_demo_audio
+)
 
-import numpy as np
-import time
+from detection_engine import (
+    detect_distress
+)
 
-DEMO_MODE = True
+from context_engine import (
+    analyze_context
+)
 
-DEMO_SCENARIOS = [
-    ("Safe", "Hey how are you"),
-    ("Medical", "I can't breathe call ambulance"),
-    ("Fire", "Fire and smoke everywhere"),
-    ("Violence", "Help someone grabbing me"),
-    ("Mental", "I don't want to live"),
-    ("Accident", "Huge crash help needed")
-]
+from decision_engine import (
+    make_decision
+)
 
-print("🚀 AI DISTRESS ENGINE STARTED")
+from action_engine import (
+    trigger_action
+)
 
-def process(text, audio):
+from learning_engine import (
+    learn_from_event
+)
 
-    scream = detect_scream(audio)
-    loud = get_loudness(audio)
-    pitch = detect_pitch(audio)
-    stress = pitch_stress(pitch)
-    stutter = detect_stutter(text)
-    instability = voice_instability(audio)
+from utils import (
+    print_banner
+)
 
-    score = calculate_score(text, scream, loud, instability, stutter, PANIC_WORDS)
+print_banner()
 
-    ai_score = ai_risk(scream, loud, stress, stutter)
+mode = input(
+    "\nChoose mode (live/demo): "
+)
 
-    final = min((score * 0.6 + ai_score * 0.4), 100)
+while True:
 
-    update_context(final)
-    learn(text, final)
+    print("\nListening...")
 
-    context_score = get_context_score()
+    if mode == "demo":
 
-    if detect_pattern():
-        final += 20
+        audio = load_demo_audio(
+            "demo_audio/help.wav"
+        )
 
-    level = decide(final, context_score)
-    category = classify(text)
+    else:
 
-    print("\nTEXT:", text)
-    print("SCORE:", round(final, 2), "| LEVEL:", level)
+        audio = record_audio()
 
-    if level in ["HIGH", "CRITICAL"]:
-        save_audio(audio)
+    detection_data = detect_distress(
+        audio
+    )
 
-    act(level, category, final)
+    context_data = analyze_context(
+        audio
+    )
 
-    save_words()
+    decision = make_decision(
+        detection_data,
+        context_data
+    )
 
+    trigger_action(
+        audio,
+        decision
+    )
 
-if DEMO_MODE:
+    learn_from_event(
+        decision
+    )
 
-    for label, text in DEMO_SCENARIOS:
-        print("\n---", label, "---")
-        fake_audio = np.ones(16000) * (0.5 if label != "Safe" else 0.1)
-        process(text, fake_audio)
-        time.sleep(2)
+    print("\nTRANSCRIPT:")
+    print(
+        detection_data["transcript"]
+    )
 
-else:
+    print("\nPANIC WORDS:")
+    print(
+        detection_data["panic_words"]
+    )
 
-    while True:
-        audio = get_audio()
-        text = "help me"  # replace with speech later
-        process(text, audio)
+    print("\nDETECTED SOUND:")
+    print(
+        detection_data["detected_sound"]
+    )
+
+    print("\nCONFIDENCE:")
+    print(
+        round(
+            detection_data[
+                "sound_confidence"
+            ],
+            2
+        )
+    )
+
+    print("\nLOUDNESS:")
+    print(
+        round(
+            context_data["loudness"],
+            2
+        )
+    )
+
+    print("\nTHREAT SCORE:")
+    print(
+        decision["threat_score"]
+    )
+
+    print("\nALERT LEVEL:")
+    print(
+        decision["alert_level"]
+    )
+
+    print("\nSYSTEM MEMORY UPDATED")
